@@ -29,58 +29,42 @@ public class Electricity {
      */
     public static int minimumSpanningCost(int n, int [][] edges) {
         //TODO
-        // STUDENT return -1;
-        // BEGIN STRIP
-        int minCost = 0;
-        UnionFind uf = new UnionFind(n);
-
-        Arrays.sort(edges, (a, b) -> a[2] - b[2]);
-
-        for (int [] edge : edges) {
-            int u = uf.find(edge[0]);
-            int v = uf.find(edge[1]);
-
-            if( u != v ) {
-                uf.union(u, v);
-                minCost += edge[2];
-            }
+        //Begin strip
+        int mincost=0;
+        Arrays.sort(edges, Comparator.comparingInt(a -> a[2]));
+        UF uf= new UF(n);
+        for(int[] edge:edges){
+            mincost+=uf.union(edge[0],edge[1],edge[2]);
         }
-        return minCost;
-        // END STRIP
+        return mincost;
+        
     }
+    public static class UF{
+        private static int[] id;
 
-    // BEGIN STRIP
-    static class UnionFind {
-        int parent[];
-        int size[];
-        UnionFind(int n) {
-            parent = new int[n];
-            size = new int[n];
-
-            for(int i = 0; i < n; i++ ) {
-                parent[i] = i;
-                size[i] = 1;
+        public UF(int n){
+            id = new int[n];
+            for (int i = 0; i < n; i++) {
+                id[i]=i;
             }
-
         }
 
-        int find(int a) {
-             return parent[a] == a ? a : (parent[a] = find(parent[a]));
+        public static int find(int p){
+            while(p!=id[p]) p = id[p];
+            return p;
         }
-
-        void union(int a, int b) {
-            a = find(a);
-            b = find(b);
-
-            if(size[b] > size[a]) {
-                int temp = a;
-                a = b;
-                b = temp;
-            }
-
-            parent[b] = a;
-            size[a] += size[b];
+        //Union who returns 0 if the nodes were already merged
+        // returns cost if the nodes are merged
+        public int union(int p, int q, int cost){
+            int rootP = find(p);
+            int rootQ = find(q);
+            if(rootQ == rootP) return 0;
+            id[p]=rootP;
+            id[rootP]=rootP;
+            id[rootQ]=rootP;
+            id[q]=rootP;
+            return cost;
         }
-    }
-    // END STRIP
+    }//endstrip
+
 }
